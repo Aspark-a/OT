@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Pháp luật trong kinh doanh vận tải Đường bộ</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .question-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem; /* rounded-lg */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-md */
+            padding: 1.5rem; /* p-6 */
+            margin-bottom: 1.5rem; /* mb-6 */
+        }
+        .option-label {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 0.75rem; /* mb-3 */
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.5rem; /* rounded-md */
+            transition: background-color 0.2s;
+        }
+        .option-label:hover {
+            background-color: #f0f4f8;
+        }
+        .option-input {
+            margin-top: 0.25rem; /* mt-1 */
+            margin-right: 0.75rem; /* mr-3 */
+            transform: scale(1.2); /* Slightly larger radio buttons */
+        }
+        .correct-answer {
+            background-color: #d1fae5; /* green-100 */
+            border: 1px solid #34d399; /* green-400 */
+        }
+        .incorrect-answer {
+            background-color: #fee2e2; /* red-100 */
+            border: 1px solid #ef4444; /* red-400 */
+        }
+        .result-item {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+    </style>
+</head>
+<body class="p-4">
+    <div class="container mx-auto p-4 max-w-3xl bg-white rounded-xl shadow-lg my-8">
+        <h1 class="text-4xl font-extrabold text-center mb-8 text-gray-800">
+            <span class="block text-indigo-600">Bài Kiểm Tra</span>
+            <span class="block text-2xl mt-2">Pháp luật trong kinh doanh vận tải Đường bộ</span>
+        </h1>
+
+        <form id="quizForm" class="space-y-6"></form>
+
+        <button id="submitQuiz" class="mt-8 w-full bg-indigo-600 text-white py-4 px-6 rounded-lg font-bold text-xl hover:bg-indigo-700 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50">
+            Nộp bài
+        </button>
+
+        <div id="results" class="mt-12 p-8 bg-gray-50 rounded-xl shadow-inner hidden">
+            <h2 class="text-3xl font-bold mb-6 text-gray-800 text-center">
+                Kết quả của bạn
+            </h2>
+            <p id="score" class="text-3xl font-extrabold text-center mb-8 text-indigo-700"></p>
+            <div id="feedback" class="space-y-4"></div>
+            <button id="retakeQuiz" class="mt-8 w-full bg-gray-200 text-gray-800 py-3 px-6 rounded-lg font-semibold hover:bg-gray-300 transition duration-300">
+                Làm lại bài kiểm tra
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+  {
+    "question": "Luật Đường bộ 2024 (Luật số 35/2024/QH15) có hiệu lực từ ngày nào?",
+    "options": {
+      "A": "01/01/2024;",
+      "B": "01/01/2025;",
+      "C": "01/07/2024;",
+      "D": "01/07/2025"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Theo Nghị định 158/2024/NĐ-CP, ai có thẩm quyền cấp giấy phép kinh doanh vận tải?",
+    "options": {
+      "A": "Bộ Giao thông Vận tải;",
+      "B": "UBND cấp tỉnh",
+      "C": "Sở Giao thông Vận tải;",
+      "D": "Tổng cục Đường bộ"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "question": "Phù hiệu xe buýt được cấp bởi cơ quan nào?",
+    "options": {
+      "A": "UBND quận/huyện;",
+      "B": "Sở Giao thông Vận tải",
+      "C": "Bộ Giao thông Vận tải;",
+      "D": "Tổng cục Đường bộ"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Thông tư 36/2024/TT-BGTVT quy định về vấn đề nào?",
+    "options": {
+      "A": "Cấp giấy phép kinh doanh vận tải;",
+      "B": "Hướng dẫn tổ chức và quản lý vận tải bằng xe ô tô",
+      "C": "Quy định mức phạt hành chính trong giao thông",
+      "D": "Thủ tục kiểm định phương tiện"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Nghị định 158/2024/NĐ-CP quy định gì về hoạt động vận tải đường bộ?",
+    "options": {
+      "A": "Điều kiện kinh doanh vận tải và quản lý hoạt động vận tải",
+      "B": "Quy hoạch tuyến đường giao thông",
+      "C": "Quy định phí bảo hiểm vận tải",
+      "D": "Cấp giấy phép cho các tuyến đường mới"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Theo quy định pháp luật, giấy phép kinh doanh vận tải có thời hạn bao lâu?",
+    "options": {
+      "A": "3 năm;",
+      "B": "5 năm;",
+      "C": "Không có thời hạn;",
+      "D": "10 năm"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "question": "Luật Đường bộ 2024 áp dụng đối với đối tượng nào?",
+    "options": {
+      "A": "Chỉ doanh nghiệp vận tải hàng hóa",
+      "B": "Tất cả các tổ chức và cá nhân tham gia giao thông đường bộ",
+      "C": "Chỉ cơ quan quản lý nhà nước",
+      "D": "Chỉ doanh nghiệp vận tải hành khách"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Ai có thẩm quyền quy định lộ trình và tuyến vận tải cố định?",
+    "options": {
+      "A": "Bộ Giao thông Vận tải;",
+      "B": "UBND cấp tỉnh",
+      "C": "Sở Giao thông Vận tải;",
+      "D": "Tổng cục Đường bộ;"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "question": "Thiết bị giám sát hành trình phải lưu trữ dữ liệu tối thiểu bao lâu?",
+    "options": {
+      "A": "6 tháng;",
+      "B": "12 tháng;",
+      "C": "24 tháng;",
+      "D": "36 tháng"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Doanh nghiệp kinh doanh vận tải cần nộp hồ sơ xin cấp giấy phép tại đâu?",
+    "options": {
+      "A": "UBND cấp xã;",
+      "B": "Bộ Giao thông Vận tải",
+      "C": "Tổng cục Đường bộ;",
+      "D": "Sở Giao thông Vận tải"
+    },
+    "correctAnswer": "D"
+  },
+  {
+    "question": "Hồ sơ xin cấp giấy phép kinh doanh vận tải cần bao gồm tài liệu nào sau đây?",
+    "options": {
+      "A": "Danh sách khách hàng;",
+      "B": "Danh sách phương tiện và lái xe",
+      "C": "Biên bản hợp đồng kinh doanh;",
+      "D": "Giấy chứng nhận y tế"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Luật Đường bộ 2024 quy định mức phạt hành chính cao nhất cho hành vi vi phạm giao thông đường bộ là bao nhiêu?",
+    "options": {
+      "A": "50 triệu đồng;",
+      "B": "75 triệu đồng",
+      "C": "100 triệu đồng",
+      "D": "150 triệu đồng"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "question": "Theo pháp luật, doanh nghiệp có bao nhiêu ngày để gia hạn giấy phép kinh doanh vận tải trước khi hết hạn?",
+    "options": {
+      "A": "10 ngày;",
+      "B": "20 ngày;",
+      "C": "30 ngày;",
+      "D": "60 ngày"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "question": "Nghị định 158/2024/NĐ-CP quy định xử phạt hành vi vận chuyển hàng hóa vượt tải trọng tối đa là bao nhiêu phần trăm?",
+    "options": {
+      "A": "50%;",
+      "B": "100%;",
+      "C": "150%;",
+      "D": "200%"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Thông tư 36/2024/TT-BGTVT yêu cầu thiết bị giám sát hành trình phải ghi nhận các thông tin nào?",
+    "options": {
+      "A": "Tốc độ, vị trí, thời gian lái xe;",
+      "B": "Loại phương tiện và tuyến đường",
+      "C": "Trọng tải và số lượng hành khách;",
+      "D": "Chỉ số nhiên liệu và chi phí vận hành"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Luật Đường bộ 2024 cấm hành vi nào dưới đây?",
+    "options": {
+      "A": "Sử dụng phương tiện không kiểm định;",
+      "B": "Vận chuyển hàng hóa nội bộ",
+      "C": "Sử dụng giấy phép kinh doanh còn hiệu lực",
+      "D": "Đăng ký phương tiện theo đúng quy định"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Ai chịu trách nhiệm chính trong việc giám sát hoạt động kinh doanh vận tải tại địa phương?",
+    "options": {
+      "A": "Bộ Giao thông Vận tải;",
+      "B": "UBND cấp xã",
+      "C": "Sở Giao thông Vận tải",
+      "D": "Tổng cục Đường bộ"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "question": "Theo quy định, xe buýt cần tuân thủ điều kiện nào để hoạt động hợp pháp?",
+    "options": {
+      "A": "Lắp đặt phù hiệu “XE BUÝT”;",
+      "B": "Lắp đặt hệ thống GPS hiện đại",
+      "C": "Có hợp đồng vận chuyển hành khách;",
+      "D": "Chỉ phục vụ trong nội thành"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Phù hiệu xe khách được cấp trong thời hạn bao lâu?",
+    "options": {
+      "A": "6 tháng;",
+      "B": "12 tháng;",
+      "C": "24 tháng;",
+      "D": "36 tháng"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "question": "Theo pháp luật, ai có trách nhiệm kiểm tra thực tế trước khi cấp giấy phép kinh doanh vận tải?",
+    "options": {
+      "A": "Bộ Giao thông Vận tải",
+      "B": "Sở Giao thông Vận tải",
+      "C": "UBND cấp huyện",
+      "D": "Tổng cục Đường bộ"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Doanh nghiệp kinh doanh vận tải phải đáp ứng điều kiện nào sau đây?",
+    "options": {
+      "A": "Có giấy phép kinh doanh vận tải;",
+      "B": "Có đủ số lượng phương tiện",
+      "C": "Cả A và B;",
+      "D": "Không cần giấy phép nếu chỉ vận tải nội bộ"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "question": "Phương tiện kinh doanh vận tải phải được kiểm định định kỳ theo quy định pháp luật nhằm mục đích gì?",
+    "options": {
+      "A": "Tăng hiệu suất vận hành",
+      "B": "Đảm bảo tiêu chuẩn an toàn kỹ thuật và bảo vệ môi trường",
+      "C": "Giảm chi phí vận hành",
+      "D": "Đáp ứng yêu cầu của khách hàng"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Thiết bị giám sát hành trình được yêu cầu trên phương tiện kinh doanh vận tải nhằm:",
+    "options": {
+      "A": "Tăng tính tiện nghi cho hành khách",
+      "B": "Lưu trữ và theo dõi hành trình, tốc độ và thời gian lái xe",
+      "C": "Hỗ trợ quảng cáo dịch vụ vận tải",
+      "D": "Thay thế hệ thống định vị GPS"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Lái xe kinh doanh vận tải phải đáp ứng điều kiện nào sau đây?",
+    "options": {
+      "A": "Có giấy phép lái xe phù hợp với loại phương tiện",
+      "B": "Có ít nhất 5 năm kinh nghiệm lái xe",
+      "C": "Được miễn kiểm tra sức khỏe định kỳ",
+      "D": "Không cần tuân thủ thời gian làm việc và nghỉ ngơi"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Thời gian nghỉ tối thiểu của lái xe sau khi làm việc tối đa trong một ngày là:",
+    "options": {
+      "A": "4 giờ;",
+      "B": "6 giờ;",
+      "C": "8 giờ;",
+      "D": "10 giờ"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "question": "Doanh nghiệp kinh doanh vận tải hành khách phải đảm bảo điều kiện nào sau đây?",
+    "options": {
+      "A": "Lộ trình vận tải được cơ quan chức năng phê duyệt",
+      "B": "Không cần phù hiệu cho phương tiện vận tải",
+      "C": "Không cần báo cáo tình trạng phương tiện",
+      "D": "Được phép thay đổi lộ trình tùy ý"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Thiết bị giám sát hành trình cần lưu trữ dữ liệu trong bao lâu để đáp ứng yêu cầu pháp luật?",
+    "options": {
+      "A": "3 tháng;",
+      "B": "6 tháng;",
+      "C": "12 tháng;",
+      "D": "24 tháng"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "question": "Doanh nghiệp kinh doanh vận tải hàng hóa cần đáp ứng điều kiện nào sau đây?",
+    "options": {
+      "A": "Có kế hoạch quản lý an toàn giao thông được phê duyệt",
+      "B": "Không cần kiểm định phương tiện",
+      "C": "Được phép vận chuyển hàng hóa vượt tải trọng cho phép",
+      "D": "Không cần giấy phép kinh doanh vận tải"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Hành vi nào sau đây khiến giấy phép kinh doanh vận tải bị thu hồi?",
+    "options": {
+      "A": "Không thực hiện đào tạo lái xe định kỳ",
+      "B": "Tái phạm nhiều lần các hành vi vi phạm pháp luật",
+      "C": "Không lắp đặt thiết bị giám sát hành trình",
+      "D": "Thay đổi chủ sở hữu doanh nghiệp"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Thời gian lái xe liên tục tối đa theo quy định là:",
+    "options": {
+      "A": "3 giờ;",
+      "B": "4 giờ;",
+      "C": "5 giờ;",
+      "D": "6 giờ"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Doanh nghiệp vận tải hành khách theo tuyến cố định phải đảm bảo điều kiện nào sau đây?",
+    "options": {
+      "A": "Phương tiện không cần phù hiệu",
+      "B": "Được đón trả khách ngoài các điểm đã phê duyệt",
+      "C": "Hoạt động theo lộ trình được cơ quan có thẩm quyền phê duyệt",
+      "D": "Không cần giấy phép kinh doanh"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "question": "Lái xe kinh doanh vận tải hàng hóa cần đảm bảo điều kiện nào?",
+    "options": {
+      "A": "Được phép vận chuyển hàng hóa nguy hiểm mà không cần giấy phép",
+      "B": "Tuân thủ quy định thời gian làm việc và nghỉ ngơi",
+      "C": "Được phép thay đổi lộ trình không báo trước",
+      "D": "Không cần kiểm tra sức khỏe định kỳ"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Phương tiện vận tải hàng hóa có trọng tải trên bao nhiêu tấn cần kiểm định định kỳ 6 tháng/lần?",
+    "options": {
+      "A": "5 tấn;",
+      "B": "10 tấn;",
+      "C": "15 tấn;",
+      "D": "20 tấn"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Điều kiện nào sau đây áp dụng cho vận tải công cộng bằng xe buýt?",
+    "options": {
+      "A": "Phải có phù hiệu “XE BUÝT” rõ ràng",
+      "B": "Không cần kiểm định định kỳ",
+      "C": "Được phép hoạt động trên bất kỳ tuyến đường nào",
+      "D": "Không cần chỗ ngồi ưu tiên cho người khuyết tật"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Hành vi nào khiến doanh nghiệp kinh doanh vận tải hàng hóa bị xử phạt?",
+    "options": {
+      "A": "Không lắp đặt biển cảnh báo nguy hiểm trên phương tiện chở hàng nguy hiểm",
+      "B": "Tuân thủ đầy đủ lộ trình được phê duyệt",
+      "C": "Lưu trữ dữ liệu từ thiết bị giám sát hành trình đúng thời hạn",
+      "D": "Đảm bảo kiểm định phương tiện định kỳ"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Giấy phép kinh doanh vận tải có thời hạn là bao lâu?",
+    "options": {
+      "A": "Không có thời hạn;",
+      "B": "5 năm;",
+      "C": "7 năm;",
+      "D": "10 năm"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Phù hiệu xe khách có thời hạn bao lâu?",
+    "options": {
+      "A": "6 tháng;",
+      "B": "12 tháng;",
+      "C": "24 tháng;",
+      "D": "36 tháng"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "question": "Lái xe kinh doanh vận tải phải tuân thủ điều kiện gì khi lái xe liên tục?",
+    "options": {
+      "A": "Lái tối đa 4 giờ liên tục và nghỉ tối thiểu 30 phút",
+      "B": "Lái tối đa 5 giờ liên tục và nghỉ 15 phút",
+      "C": "Lái tối đa 6 giờ liên tục và nghỉ 45 phút",
+      "D": "Lái tối đa 8 giờ liên tục và nghỉ 60 phút"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Doanh nghiệp vận tải không đảm bảo điều kiện nào sau đây sẽ bị xử phạt?",
+    "options": {
+      "A": "Có kế hoạch quản lý an toàn giao thông được phê duyệt",
+      "B": "Không kiểm định phương tiện định kỳ",
+      "C": "Lưu trữ dữ liệu từ thiết bị giám sát hành trình",
+      "D": "Đảm bảo phù hiệu trên phương tiện"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Phương tiện vận tải hàng hóa vượt quá tải trọng bao nhiêu phần trăm sẽ bị xử phạt?",
+    "options": {
+      "A": "10%;",
+      "B": "25%;",
+      "C": "50%;",
+      "D": "100%"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "question": "Vận tải hành khách theo tuyến cố định yêu cầu:",
+    "options": {
+      "A": "Phương tiện có hợp đồng trước khi xuất phát",
+      "B": "Phải xuất phát và kết thúc tại bến xe cố định",
+      "C": "Được quyền đón khách dọc đường",
+      "D": "Không cần lộ trình cố định"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Vận tải hành khách theo hợp đồng yêu cầu:",
+    "options": {
+      "A": "Không cần hợp đồng nếu khách quen",
+      "B": "Phải ký hợp đồng vận chuyển trước khi xuất phát",
+      "C": "Được đón thêm khách ngoài hợp đồng",
+      "D": "Không cần tuân thủ quy định về lịch trình"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Vận tải công cộng bằng xe buýt cần đáp ứng điều kiện nào?",
+    "options": {
+      "A": "Không cần phù hiệu xe buýt;",
+      "B": "Phải có lộ trình và lịch trình cố định",
+      "C": "Được phép dừng đỗ bất kỳ đâu;",
+      "D": "Không cần chỗ ngồi ưu tiên"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Phương tiện vận tải hàng hóa siêu trường, siêu trọng cần điều kiện gì?",
+    "options": {
+      "A": "Không cần giấy phép vận chuyển",
+      "B": "Phải có giấy phép đặc biệt từ cơ quan chức năng",
+      "C": "Được tự do vận chuyển trên mọi tuyến đường",
+      "D": "Không cần tuân thủ quy định về trọng tải"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Phân loại kinh doanh vận tải gồm những nhóm nào?",
+    "options": {
+      "A": "Vận tải hàng hóa, hành khách, và nội bộ",
+      "B": "Vận tải hành khách theo tuyến cố định, hợp đồng, công cộng và hàng hóa",
+      "C": "Chỉ vận tải hàng hóa và hành khách",
+      "D": "Chỉ vận tải hành khách theo hợp đồng"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Vận tải hành khách công cộng (xe buýt) được ưu tiên:",
+    "options": {
+      "A": "Chạy trên mọi tuyến đường",
+      "B": "Sử dụng làn đường dành riêng trong đô thị",
+      "C": "Không cần kiểm định phương tiện định kỳ",
+      "D": "Không cần phù hiệu xe buýt"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Vận tải hành khách theo tuyến cố định không được phép:",
+    "options": {
+      "A": "Đón trả khách dọc tuyến được phê duyệt",
+      "B": "Thay đổi lộ trình mà không báo cáo",
+      "C": "Kết thúc tại bến xe đã đăng ký",
+      "D": "Hoạt động trên tuyến đường liên tỉnh"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Vận tải hàng hóa bao gồm:",
+    "options": {
+      "A": "Vận chuyển hàng nguy hiểm và hàng hóa thông thường",
+      "B": "Chỉ vận chuyển hàng hóa nội bộ",
+      "C": "Chỉ vận chuyển hàng hóa nguy hiểm",
+      "D": "Chỉ vận chuyển hàng hóa theo hợp đồng"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Vận tải hàng hóa nguy hiểm yêu cầu lái xe:",
+    "options": {
+      "A": "Có chứng nhận đào tạo về vận chuyển hàng nguy hiểm",
+      "B": "Có kinh nghiệm lái xe trên 10 năm",
+      "C": "Có hợp đồng với doanh nghiệp vận tải",
+      "D": "Không cần giấy phép vận chuyển"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Loại hình vận tải nào yêu cầu phải có hợp đồng vận chuyển trước?",
+    "options": {
+      "A": "Vận tải hành khách công cộng;",
+      "B": "Vận tải hành khách theo hợp đồng",
+      "C": "Vận tải hành khách theo tuyến cố định;",
+      "D": "Vận tải hàng hóa nội bộ"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Vận tải hành khách theo hợp đồng không được phép:",
+    "options": {
+      "A": "Ký hợp đồng bằng văn bản hoặc điện tử",
+      "B": "Đón trả khách tại các điểm không có trong hợp đồng",
+      "C": "Cung cấp thông tin hành trình rõ ràng",
+      "D": "Vận chuyển đúng số lượng khách trong hợp đồng"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Vận tải hàng hóa nội bộ là loại hình:",
+    "options": {
+      "A": "Chỉ vận chuyển hàng hóa trong nội bộ doanh nghiệp",
+      "B": "Phải đăng ký tuyến cố định",
+      "C": "Chỉ cần giấy phép vận chuyển hàng nguy hiểm",
+      "D": "Phải có giấy phép kinh doanh vận tải"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Xe buýt cần đáp ứng yêu cầu nào sau đây?",
+    "options": {
+      "A": "Có lộ trình rõ ràng và chỗ ngồi ưu tiên cho người khuyết tật",
+      "B": "Không cần kiểm định phương tiện định kỳ",
+      "C": "Được phép chạy trên tuyến đường không đăng ký",
+      "D": "Không cần phù hiệu “XE BUÝT”"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Phương tiện vận tải hành khách theo tuyến cố định phải:",
+    "options": {
+      "A": "Kết thúc tại bất kỳ điểm nào tiện lợi",
+      "B": "Có lộ trình rõ ràng được cơ quan chức năng phê duyệt",
+      "C": "Không cần giấy phép kinh doanh vận tải",
+      "D": "Được phép hoạt động không giới hạn thời gian"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Vận tải hàng hóa siêu trường, siêu trọng phải:",
+    "options": {
+      "A": "Không được phép hoạt động trên đường cao tốc",
+      "B": "Được kiểm tra kỹ thuật đặc biệt trước khi vận chuyển",
+      "C": "Không cần giấy phép nếu vận chuyển nội bộ",
+      "D": "Không cần trang bị biển cảnh báo nguy hiểm"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Hành vi nào bị nghiêm cấm trong kinh doanh vận tải?",
+    "options": {
+      "A": "Vận chuyển hàng nguy hiểm không phép",
+      "B": "Đón trả khách đúng tuyến",
+      "C": "Sử dụng phương tiện đã kiểm định",
+      "D": "Chỉ vận chuyển hàng hóa"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Doanh nghiệp kinh doanh vận tải bị nghiêm cấm thực hiện hành vi nào sau đây?",
+    "options": {
+      "A": "Sử dụng phương tiện không đạt tiêu chuẩn kỹ thuật",
+      "B": "Đào tạo lái xe định kỳ",
+      "C": "Nộp hồ sơ xin cấp phép đúng hạn",
+      "D": "Tuân thủ lộ trình vận tải"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Hành vi nào sau đây là vi phạm nghiêm trọng trong vận tải hành khách?",
+    "options": {
+      "A": "Đón trả khách đúng điểm đã đăng ký",
+      "B": "Ký hợp đồng vận chuyển trước khi xuất phát",
+      "C": "Đón trả khách dọc đường ngoài các điểm đã quy định",
+      "D": "Cung cấp đủ thông tin hành trình cho hành khách"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "question": "Trong kinh doanh vận tải, hành vi gian lận trong kiểm định phương tiện được hiểu là gì?",
+    "options": {
+      "A": "Làm giả giấy chứng nhận kiểm định",
+      "B": "Kiểm định phương tiện định kỳ đúng hạn",
+      "C": "Sửa chữa phương tiện trước khi kiểm định",
+      "D": "Lắp đặt thiết bị giám sát hành trình"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Hành vi tự ý lập điểm dừng, đỗ không đúng quy định có thể dẫn đến:",
+    "options": {
+      "A": "Được hỗ trợ bởi cơ quan chức năng",
+      "B": "Bị xử phạt hành chính hoặc đình chỉ hoạt động",
+      "C": "Được khuyến khích mở rộng tuyến đường",
+      "D": "Được miễn kiểm tra hành trình"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Hành vi nào bị nghiêm cấm khi vận tải hàng hóa?",
+    "options": {
+      "A": "Ghi chép đầy đủ thông tin hàng hóa",
+      "B": "Vận chuyển hàng vượt quá tải trọng cho phép",
+      "C": "Trang bị đầy đủ dụng cụ bảo vệ hàng hóa",
+      "D": "Tuân thủ lộ trình vận chuyển"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Lái xe kinh doanh vận tải bị nghiêm cấm thực hiện hành vi nào sau đây?",
+    "options": {
+      "A": "Chấp hành quy định về thời gian lái xe liên tục",
+      "B": "Sử dụng giấy phép lái xe giả",
+      "C": "Tuân thủ tốc độ cho phép",
+      "D": "Báo cáo đầy đủ tình trạng phương tiện"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Hành vi chở quá số người quy định trong vận tải hành khách được coi là:",
+    "options": {
+      "A": "Vi phạm quy định pháp luật",
+      "B": "Hành động được phép khi thiếu phương tiện",
+      "C": "Hành động khuyến khích khi nhu cầu cao",
+      "D": "Được miễn xử phạt nếu không gây tai nạn"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Trong vận tải hàng hóa nguy hiểm, hành vi bị nghiêm cấm bao gồm:",
+    "options": {
+      "A": "Vận chuyển hàng hóa không có biển cảnh báo nguy hiểm",
+      "B": "Sử dụng phương tiện chuyên dụng",
+      "C": "Đào tạo lái xe về vận chuyển hàng nguy hiểm",
+      "D": "Cấp giấy phép vận chuyển đúng quy định"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Hành vi sử dụng giấy phép kinh doanh vận tải giả có thể bị:",
+    "options": {
+      "A": "Được gia hạn thêm giấy phép",
+      "B": "Xử phạt hành chính hoặc truy cứu trách nhiệm hình sự",
+      "C": "Cấp lại giấy phép miễn phí",
+      "D": "Miễn kiểm tra nếu hợp đồng vận chuyển còn hiệu lực"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Lái xe kinh doanh vận tải không được phép thực hiện hành vi nào?",
+    "options": {
+      "A": "Tuân thủ đúng tốc độ quy định",
+      "B": "Lái xe liên tục quá thời gian quy định",
+      "C": "Báo cáo tình trạng phương tiện đầy đủ",
+      "D": "Hỗ trợ hành khách trong quá trình di chuyển"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Phương tiện kinh doanh vận tải bị nghiêm cấm:",
+    "options": {
+      "A": "Vận hành khi đã đạt tiêu chuẩn an toàn kỹ thuật",
+      "B": "Sử dụng khi chưa kiểm định hoặc hết hạn kiểm định",
+      "C": "Được bảo dưỡng định kỳ",
+      "D": "Được lắp đặt thiết bị giám sát hành trình"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Hành vi gian lận trong lưu trữ dữ liệu từ thiết bị giám sát hành trình là:",
+    "options": {
+      "A": "Không lưu trữ đầy đủ dữ liệu hành trình",
+      "B": "Lưu trữ dữ liệu đúng thời hạn quy định",
+      "C": "Cập nhật dữ liệu định kỳ hàng tháng",
+      "D": "Cung cấp dữ liệu đầy đủ khi bị kiểm tra"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Việc vận chuyển hàng hóa không rõ nguồn gốc xuất xứ trong kinh doanh vận tải được xem là:",
+    "options": {
+      "A": "Vi phạm pháp luật và bị xử lý nghiêm khắc",
+      "B": "Hoạt động hợp pháp nếu không gây hậu quả",
+      "C": "Hành vi được miễn kiểm tra",
+      "D": "Hành vi được khuyến khích trong trường hợp khẩn cấp"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Hậu quả của việc không tuân thủ pháp luật trong vận tải là:",
+    "options": {
+      "A": "Tăng uy tín doanh nghiệp;",
+      "B": "Xử phạt hành chính, đình chỉ hoạt động",
+      "C": "Tăng khả năng cạnh tranh;",
+      "D": "Được miễn trách nhiệm pháp lý"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Doanh nghiệp vận tải không tuân thủ các điều kiện kinh doanh có thể bị:",
+    "options": {
+      "A": "Miễn trừ trách nhiệm pháp lý;",
+      "B": "Thu hồi giấy phép kinh doanh",
+      "C": "Hỗ trợ từ cơ quan chức năng;",
+      "D": "Gia hạn giấy phép tự động"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Việc không kiểm định phương tiện định kỳ dẫn đến:",
+    "options": {
+      "A": "Phương tiện được phép hoạt động bình thường",
+      "B": "Tăng độ an toàn giao thông",
+      "C": "Bị phạt tiền hoặc đình chỉ hoạt động",
+      "D": "Được miễn kiểm tra hành trình"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "question": "Hậu quả xã hội của việc vi phạm pháp luật trong kinh doanh vận tải là:",
+    "options": {
+      "A": "Đảm bảo an toàn giao thông",
+      "B": "Gây mất an toàn giao thông và trật tự xã hội",
+      "C": "Tăng cường niềm tin của khách hàng",
+      "D": "Tạo điều kiện cho các doanh nghiệp cạnh tranh không lành mạnh"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Việc không tuân thủ thời gian lái xe quy định có thể dẫn đến hậu quả gì?",
+    "options": {
+      "A": "Tăng hiệu suất làm việc của lái xe",
+      "B": "Gây tai nạn giao thông do mệt mỏi",
+      "C": "Được khen thưởng vì hoàn thành công việc nhanh chóng",
+      "D": "Miễn bị xử phạt nếu không gây tai nạn"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Ý nghĩa của việc tuân thủ pháp luật đối với doanh nghiệp là gì?",
+    "options": {
+      "A": "Tăng chi phí hoạt động;",
+      "B": "Nâng cao uy tín và hoạt động ổn định",
+      "C": "Giảm sự giám sát từ cơ quan chức năng",
+      "D": "Không cần thực hiện các điều kiện kinh doanh"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Tuân thủ pháp luật trong vận tải giúp đảm bảo điều gì đối với xã hội?",
+    "options": {
+      "A": "Quyền lợi của người dân và an toàn giao thông",
+      "B": "Tăng số lượng vi phạm hành chính",
+      "C": "Hạn chế phát triển ngành giao thông vận tải",
+      "D": "Tạo điều kiện cho các doanh nghiệp vi phạm"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Doanh nghiệp vi phạm pháp luật nhiều lần có thể:",
+    "options": {
+      "A": "Được gia hạn giấy phép kinh doanh;",
+      "B": "Bị rút giấy phép kinh doanh",
+      "C": "Được giảm mức xử phạt",
+      "D": "Được hỗ trợ đào tạo lái xe miễn phí"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Việc tuân thủ pháp luật giúp doanh nghiệp:",
+    "options": {
+      "A": "Duy trì uy tín và hoạt động ổn định;",
+      "B": "Lách luật để tăng lợi nhuận",
+      "C": "Giảm bớt chi phí kiểm tra;",
+      "D": "Không cần giấy phép"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Ý nghĩa của việc tuân thủ pháp luật đối với sự phát triển kinh tế xã hội là:",
+    "options": {
+      "A": "Tạo môi trường kinh doanh lành mạnh",
+      "B": "Gây mất trật tự trong ngành vận tải",
+      "C": "Khuyến khích các doanh nghiệp vi phạm pháp luật",
+      "D": "Làm chậm sự phát triển của ngành vận tải"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Phương tiện kinh doanh vận tải phải được kiểm định bao lâu một lần đối với xe trên 10 năm tuổi?",
+    "options": {
+      "A": "6 tháng/lần;",
+      "B": "1 năm/lần;",
+      "C": "2 năm/lần;",
+      "D": "3 tháng/lần"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Thiết bị giám sát hành trình trên phương tiện kinh doanh vận tải phải ghi nhận thông tin nào?",
+    "options": {
+      "A": "Tên lái xe và số lượng hàng hóa;",
+      "B": "Tốc độ, vị trí và thời gian lái xe",
+      "C": "Loại hàng hóa vận chuyển;",
+      "D": "Chỉ số nhiên liệu tiêu thụ"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Thời gian lưu trữ dữ liệu từ thiết bị giám sát hành trình là bao lâu?",
+    "options": {
+      "A": "3 tháng;",
+      "B": "6 tháng;",
+      "C": "12 tháng;",
+      "D": "24 tháng"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "question": "Điểm dừng đỗ của phương tiện vận tải phải đảm bảo điều kiện nào?",
+    "options": {
+      "A": "Không cần tuân thủ quy hoạch giao thông",
+      "B": "Được cơ quan có thẩm quyền phê duyệt",
+      "C": "Được doanh nghiệp tự quy định",
+      "D": "Có thể tự lập bất kỳ nơi nào"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Xe buýt cần đảm bảo điều kiện nào sau đây?",
+    "options": {
+      "A": "Không cần phù hiệu nếu hoạt động nội thành",
+      "B": "Phải có phù hiệu “XE BUÝT” rõ ràng",
+      "C": "Không cần chỗ ngồi ưu tiên",
+      "D": "Được hoạt động trên bất kỳ tuyến đường nào"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Doanh nghiệp vận tải hàng hóa siêu trường, siêu trọng cần:",
+    "options": {
+      "A": "Giấy phép đặc biệt từ cơ quan quản lý giao thông",
+      "B": "Không cần giấy phép nếu vận tải nội bộ",
+      "C": "Chỉ cần báo cáo lộ trình vận chuyển",
+      "D": "Không cần tuân thủ quy định về tải trọng"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Điều kiện vận chuyển hàng nguy hiểm bao gồm:",
+    "options": {
+      "A": "Có biển cảnh báo nguy hiểm trên phương tiện",
+      "B": "Chỉ cần giấy phép kinh doanh vận tải thông thường",
+      "C": "Không cần đào tạo lái xe chuyên biệt",
+      "D": "Được vận chuyển trên mọi tuyến đường"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Theo quy định pháp luật, thời gian tối thiểu để lưu trữ hồ sơ xin cấp giấy phép kinh doanh vận tải là bao lâu?",
+    "options": {
+      "A": "6 tháng;",
+      "B": "12 tháng;",
+      "C": "24 tháng;",
+      "D": "36 tháng"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Khi nào giấy phép kinh doanh vận tải có thể bị thu hồi?",
+    "options": {
+      "A": "Khi doanh nghiệp thay đổi địa chỉ trụ sở",
+      "B": "Khi doanh nghiệp vi phạm nhiều lần quy định pháp luật",
+      "C": "Khi doanh nghiệp không hoạt động trong 1 tháng",
+      "D": "Khi doanh nghiệp xin gia hạn giấy phép"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Theo quy định, việc vận tải hành khách theo hợp đồng phải:",
+    "options": {
+      "A": "Ký hợp đồng trước khi xuất phát",
+      "B": "Đón khách dọc đường khi có nhu cầu",
+      "C": "Không cần hợp đồng nếu chở dưới 10 người",
+      "D": "Tuân thủ lộ trình tuyến cố định"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Hành vi nào sau đây được xem là tuân thủ đầy đủ quy định pháp luật trong kinh doanh vận tải?",
+    "options": {
+      "A": "Lái xe vận hành phương tiện vượt quá thời gian quy định",
+      "B": "Phương tiện có đầy đủ giấy phép và kiểm định định kỳ",
+      "C": "Vận chuyển hàng hóa nguy hiểm mà không có giấy phép",
+      "D": "Tự ý thay đổi lộ trình không báo cáo cơ quan chức năng"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Thời gian tối đa lái xe liên tục trong vận tải hành khách được quy định là:",
+    "options": {
+      "A": "4 giờ;",
+      "B": "5 giờ;",
+      "C": "6 giờ;",
+      "D": "8 giờ"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Doanh nghiệp vận tải phải đảm bảo kiểm định phương tiện định kỳ với mục đích gì?",
+    "options": {
+      "A": "Nâng cao chất lượng dịch vụ",
+      "B": "Đáp ứng yêu cầu của khách hàng",
+      "C": "Đảm bảo an toàn kỹ thuật và bảo vệ môi trường",
+      "D": "Tăng số lượng chuyến xe hoạt động"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "question": "Hành vi không lưu trữ dữ liệu từ thiết bị giám sát hành trình đúng thời hạn sẽ bị xử lý như thế nào?",
+    "options": {
+      "A": "Phạt hành chính và yêu cầu bổ sung dữ liệu",
+      "B": "Được nhắc nhở và gia hạn thời gian lưu trữ",
+      "C": "Miễn trách nhiệm nếu không gây hậu quả nghiêm trọng",
+      "D": "Không bị xử phạt nếu doanh nghiệp hợp tác"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Theo quy định, vận tải hành khách theo tuyến cố định phải đảm bảo điều kiện nào?",
+    "options": {
+      "A": "Được phép đón trả khách ngoài điểm đăng ký",
+      "B": "Phải có lộ trình được phê duyệt bởi cơ quan có thẩm quyền",
+      "C": "Không cần giấy phép kinh doanh nếu hoạt động nội tỉnh",
+      "D": "Tự ý thay đổi giờ khởi hành khi có nhu cầu"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Lái xe vận tải hàng hóa nguy hiểm phải:",
+    "options": {
+      "A": "Có giấy phép vận tải thông thường",
+      "B": "Được đào tạo và có chứng nhận về vận chuyển hàng nguy hiểm",
+      "C": "Có kinh nghiệm lái xe trên 3 năm",
+      "D": "Được miễn kiểm tra sức khỏe định kỳ"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Phương tiện vận tải hành khách công cộng cần đáp ứng điều kiện nào?",
+    "options": {
+      "A": "Không cần phù hiệu nếu hoạt động nội bộ",
+      "B": "Phải có phù hiệu và đảm bảo lịch trình đã đăng ký",
+      "C": "Được phép vận hành trên mọi tuyến đường không báo trước",
+      "D": "Không cần kiểm định phương tiện định kỳ"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Hành vi vận chuyển hàng hóa vượt quá tải trọng quy định sẽ dẫn đến:",
+    "options": {
+      "A": "Phạt hành chính hoặc đình chỉ hoạt động phương tiện",
+      "B": "Được cảnh báo mà không xử phạt nếu vi phạm lần đầu",
+      "C": "Được phép nếu không gây ảnh hưởng đến giao thông",
+      "D": "Hỗ trợ doanh nghiệp xin cấp giấy phép bổ sung"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Điều kiện bắt buộc khi vận tải hàng hóa siêu trường, siêu trọng là gì?",
+    "options": {
+      "A": "Có giấy phép vận chuyển đặc biệt",
+      "B": "Sử dụng phương tiện thông thường để vận chuyển",
+      "C": "Miễn thông báo lộ trình với cơ quan chức năng",
+      "D": "Không cần trang bị biển cảnh báo nguy hiểm"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Doanh nghiệp kinh doanh vận tải hành khách theo hợp đồng không được phép thực hiện hành vi nào?",
+    "options": {
+      "A": "Ký hợp đồng vận chuyển trước khi xuất phát",
+      "B": "Đón khách tại các điểm không được ghi trong hợp đồng",
+      "C": "Cung cấp thông tin hành trình rõ ràng cho hành khách",
+      "D": "Tuân thủ đầy đủ số lượng khách trong hợp đồng"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Hành vi nào bị nghiêm cấm trong vận tải hành khách?",
+    "options": {
+      "A": "Đảm bảo hành trình và lịch trình theo quy định",
+      "B": "Chở quá số người so với số ghế quy định",
+      "C": "Sử dụng phương tiện đã qua kiểm định kỹ thuật",
+      "D": "Trang bị đầy đủ thiết bị giám sát hành trình"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Công ty ABC muốn kinh doanh vận tải hành khách theo tuyến cố định. Điều kiện nào là bắt buộc để công ty hoạt động hợp pháp?",
+    "options": {
+      "A": "Được miễn giấy phép kinh doanh nếu chỉ hoạt động nội bộ",
+      "B": "Phải có giấy phép kinh doanh vận tải do cơ quan chức năng cấp",
+      "C": "Không cần đăng ký tuyến cố định nếu có phương tiện đầy đủ",
+      "D": "Chỉ cần hợp đồng vận tải là đủ"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Phương tiện vận tải hàng hóa của công ty XYZ đã hoạt động hơn 10 năm. Công ty cần kiểm định phương tiện bao lâu một lần?",
+    "options": {
+      "A": "3 tháng/lần;",
+      "B": "6 tháng/lần",
+      "C": "1 năm/lần",
+      "D": "Không cần kiểm định nếu phương tiện đạt tiêu chuẩn"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Lái xe của doanh nghiệp DEF đã lái xe liên tục 4 giờ. Theo quy định, tài xế cần nghỉ tối thiểu bao lâu trước khi tiếp tục hành trình?",
+    "options": {
+      "A": "10 phút;",
+      "B": "15 phút;",
+      "C": "30 phút;",
+      "D": "1 giờ"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "question": "Xe buýt của công ty GHI hoạt động tại nội thành nhưng không có phù hiệu “XE BUÝT”. Trường hợp này có vi phạm pháp luật không?",
+    "options": {
+      "A": "Không vi phạm nếu hoạt động nội thành",
+      "B": "Vi phạm vì không có phù hiệu “XE BUÝT”",
+      "C": "Không vi phạm nếu đã có hợp đồng vận tải",
+      "D": "Vi phạm nếu xe buýt hoạt động liên tỉnh"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Doanh nghiệp vận tải hàng hóa KLM muốn vận chuyển hàng nguy hiểm. Điều kiện nào là bắt buộc?",
+    "options": {
+      "A": "Chỉ cần phương tiện đủ tải trọng",
+      "B": "Có giấy phép vận chuyển hàng nguy hiểm",
+      "C": "Không cần điều kiện gì nếu hợp đồng hợp pháp",
+      "D": "Lái xe có kinh nghiệm trên 5 năm"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Doanh nghiệp vận tải hành khách theo hợp đồng được phép đón khách dọc đường trong trường hợp nào?",
+    "options": {
+      "A": "Khi hành khách có nhu cầu cấp bách",
+      "B": "Khi hợp đồng có ghi rõ điểm đón khách dọc đường",
+      "C": "Khi phương tiện còn đủ chỗ trống",
+      "D": "Không được phép đón khách dọc đường"
+    },
+    "correctAnswer": "D"
+  },
+  {
+    "question": "Doanh nghiệp vận tải hàng hóa đã chở vượt 20% tải trọng cho phép. Hành vi này có thể dẫn đến hậu quả nào?",
+    "options": {
+      "A": "Phạt hành chính hoặc đình chỉ phương tiện",
+      "B": "Được nhắc nhở lần đầu nếu chưa gây tai nạn",
+      "C": "Miễn trách nhiệm nếu không gây hư hại đường",
+      "D": "Phải đóng thêm phí vận chuyển"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Công ty ABC sử dụng giấy phép kinh doanh vận tải giả. Trường hợp này sẽ bị xử lý như thế nào?",
+    "options": {
+      "A": "Được cấp lại giấy phép nếu tự nguyện báo cáo",
+      "B": "Xử phạt hành chính hoặc truy cứu trách nhiệm hình sự",
+      "C": "Miễn xử phạt nếu chưa gây hậu quả nghiêm trọng",
+      "D": "Được gia hạn giấy phép nếu nộp phạt"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Xe khách của doanh nghiệp MNO chở quá 10 hành khách so với số ghế quy định. Trường hợp này được coi là:",
+    "options": {
+      "A": "Vi phạm pháp luật về vận tải hành khách",
+      "B": "Hành vi được chấp nhận nếu phương tiện còn chỗ đứng",
+      "C": "Không vi phạm nếu không gây ảnh hưởng đến hành trình",
+      "D": "Vi phạm nhẹ và chỉ bị cảnh báo"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Thiết bị giám sát hành trình trên phương tiện vận tải phải ghi nhận thông tin nào?",
+    "options": {
+      "A": "Loại hàng hóa vận chuyển;",
+      "B": "Tốc độ, vị trí và thời gian lái xe",
+      "C": "Số lượng hành khách trên xe;",
+      "D": "Mức tiêu thụ nhiên liệu"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Xe buýt của doanh nghiệp EFG cần phải:",
+    "options": {
+      "A": "Có phù hiệu “XE BUÝT” và đảm bảo lịch trình cố định",
+      "B": "Chỉ cần hợp đồng vận tải với địa phương",
+      "C": "Không cần kiểm định định kỳ nếu hoạt động nội thành",
+      "D": "Được phép tự điều chỉnh lộ trình"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Lái xe vận tải hàng hóa cần đáp ứng điều kiện nào?",
+    "options": {
+      "A": "Có kinh nghiệm lái xe trên 3 năm",
+      "B": "Có giấy phép lái xe phù hợp với loại phương tiện",
+      "C": "Được đào tạo định kỳ về vận chuyển hàng hóa nguy hiểm",
+      "D": "Tất cả các điều kiện trên"
+    },
+    "correctAnswer": "D"
+  },
+  {
+    "question": "Doanh nghiệp vận tải hàng hóa của bạn sử dụng phương tiện có trọng tải trên 10 tấn. Thời gian kiểm định định kỳ bắt buộc là:",
+    "options": {
+      "A": "6 tháng/lần;",
+      "B": "12 tháng/lần;",
+      "C": "24 tháng/lần;",
+      "D": "3 tháng/lần"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Doanh nghiệp ABC chỉ vận chuyển hàng hóa trong nội bộ. Trong trường hợp này, doanh nghiệp:",
+    "options": {
+      "A": "Phải xin giấy phép kinh doanh vận tải",
+      "B": "Không cần giấy phép kinh doanh vận tải",
+      "C": "Cần hợp đồng vận tải với đối tác thứ ba",
+      "D": "Miễn tất cả các điều kiện kinh doanh vận tải"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Doanh nghiệp vận tải tự lập điểm dừng đỗ không được cơ quan có thẩm quyền phê duyệt. Hành vi này:",
+    "options": {
+      "A": "Được phép nếu không ảnh hưởng giao thông",
+      "B": "Bị xử phạt hành chính hoặc đình chỉ hoạt động",
+      "C": "Không vi phạm nếu được khách hàng đồng ý",
+      "D": "Chỉ cảnh báo trong lần đầu tiên"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Nếu phát hiện doanh nghiệp sử dụng giấy phép vận tải giả, cơ quan chức năng sẽ:",
+    "options": {
+      "A": "Miễn trách nhiệm nếu nộp phạt kịp thời",
+      "B": "Xử phạt hành chính hoặc truy cứu trách nhiệm hình sự",
+      "C": "Chỉ cảnh cáo nếu chưa gây hậu quả nghiêm trọng",
+      "D": "Gia hạn giấy phép nếu khắc phục lỗi"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Một lái xe vận tải đã lái liên tục 4 giờ. Theo quy định, thời gian nghỉ tối thiểu là:",
+    "options": {
+      "A": "10 phút;",
+      "B": "15 phút;",
+      "C": "30 phút;",
+      "D": "1 giờ"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "question": "Một xe khách chở quá số người quy định, hậu quả pháp lý là:",
+    "options": {
+      "A": "Cảnh báo và miễn phạt nếu không gây tai nạn",
+      "B": "Xử phạt hành chính hoặc đình chỉ hoạt động phương tiện",
+      "C": "Không bị phạt nếu chở nội bộ doanh nghiệp",
+      "D": "Được khuyến khích nếu hành khách có nhu cầu cấp bách"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Xe khách của doanh nghiệp muốn hoạt động hợp pháp cần đảm bảo điều kiện nào?",
+    "options": {
+      "A": "Không cần phù hiệu nếu hoạt động nội tỉnh",
+      "B": "Phải có phù hiệu “XE KHÁCH” do cơ quan chức năng cấp",
+      "C": "Miễn phù hiệu nếu xe đã kiểm định",
+      "D": "Tự đăng ký phù hiệu với cơ quan địa phương"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Doanh nghiệp phải lưu trữ dữ liệu từ thiết bị giám sát hành trình trong thời gian bao lâu?",
+    "options": {
+      "A": "3 tháng;",
+      "B": "6 tháng;",
+      "C": "12 tháng;",
+      "D": "24 tháng"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "question": "Công ty vận tải bị phát hiện vận chuyển hàng hóa không rõ nguồn gốc. Trường hợp này sẽ:",
+    "options": {
+      "A": "Bị xử lý nghiêm theo pháp luật",
+      "B": "Miễn trách nhiệm nếu không gây hậu quả",
+      "C": "Được cảnh báo lần đầu",
+      "D": "Không vi phạm nếu khách hàng chịu trách nhiệm"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Tài xế của công ty sử dụng giấy phép lái xe hạng B để lái xe tải 3.5 tấn. Trường hợp này:",
+    "options": {
+      "A": "Vi phạm quy định về giấy phép lái xe",
+      "B": "Không vi phạm nếu đã có kinh nghiệm",
+      "C": "Chỉ bị cảnh cáo lần đầu",
+      "D": "Không vi phạm nếu xe vận hành nội bộ"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Doanh nghiệp muốn vận chuyển hóa chất nguy hiểm nhưng không có giấy phép. Hậu quả pháp lý là:",
+    "options": {
+      "A": "Bị phạt hành chính và cấm vận chuyển",
+      "B": "Được chấp nhận nếu không xảy ra tai nạn",
+      "C": "Chỉ bị cảnh cáo nếu lần đầu vi phạm",
+      "D": "Không bị xử phạt nếu hợp đồng hợp lệ"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Xe buýt công cộng muốn hoạt động đúng pháp luật phải đáp ứng điều kiện nào?",
+    "options": {
+      "A": "Không cần kiểm định nếu hoạt động nội tỉnh",
+      "B": "Có phù hiệu “XE BUÝT” rõ ràng",
+      "C": "Được phép hoạt động mà không cần lộ trình cố định",
+      "D": "Không cần chỗ ngồi ưu tiên cho người khuyết tật"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Tài xế lái xe liên tục quá 6 giờ mà không nghỉ ngơi. Hành vi này sẽ dẫn đến:",
+    "options": {
+      "A": "Tăng hiệu suất làm việc;",
+      "B": "Gây nguy cơ tai nạn giao thông",
+      "C": "Được miễn xử lý nếu hoàn thành công việc;",
+      "D": "Chỉ cảnh cáo lần đầu"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Doanh nghiệp vận tải hành khách theo hợp đồng đón khách ngoài điểm đã đăng ký. Hành vi này là:",
+    "options": {
+      "A": "Vi phạm quy định pháp luật;",
+      "B": "Được phép nếu khách hàng yêu cầu",
+      "C": "Không vi phạm nếu tuyến đường phù hợp",
+      "D": "Miễn xử lý nếu không gây ảnh hưởng giao thông"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Phương tiện của công ty vẫn hoạt động dù hết hạn kiểm định. Trường hợp này sẽ bị xử lý:",
+    "options": {
+      "A": "Phạt hành chính và cấm hoạt động phương tiện",
+      "B": "Được nhắc nhở và gia hạn kiểm định",
+      "C": "Không vi phạm nếu chưa xảy ra tai nạn",
+      "D": "Miễn xử lý nếu phương tiện còn sử dụng được"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Vận tải hành khách tuyến cố định muốn thay đổi lộ trình phải:",
+    "options": {
+      "A": "Báo cáo và được cơ quan chức năng phê duyệt",
+      "B": "Không cần báo cáo nếu thuận tiện cho hành khách",
+      "C": "Tự điều chỉnh lộ trình khi có sự cố",
+      "D": "Được miễn báo cáo nếu còn đủ thời gian hoạt động"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Doanh nghiệp kinh doanh vận tải phải mua bảo hiểm trách nhiệm dân sự cho:",
+    "options": {
+      "A": "Tài xế;",
+      "B": "Phương tiện và hàng hóa",
+      "C": "Chỉ hành khách;",
+      "D": "Không cần mua nếu tự vận hành"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Hành vi nào sau đây được coi là gian lận trong kiểm định phương tiện?",
+    "options": {
+      "A": "Làm giả giấy chứng nhận kiểm định",
+      "B": "Đưa phương tiện đi kiểm định đúng hạn",
+      "C": "Sửa chữa phương tiện trước khi kiểm định",
+      "D": "Lắp đặt thiết bị mới để kiểm tra"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Tài xế lái xe vận tải hành khách vượt quá thời gian lái xe tối đa trong ngày là 10 giờ. Trường hợp này có thể bị xử lý:",
+    "options": {
+      "A": "Cảnh báo lần đầu;",
+      "B": "Phạt hành chính và tước giấy phép lái xe",
+      "C": "Miễn xử lý nếu không gây tai nạn;",
+      "D": "Được yêu cầu viết cam kết"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Khi vận chuyển hàng siêu trường, siêu trọng, doanh nghiệp cần đảm bảo:",
+    "options": {
+      "A": "Chỉ cần phương tiện có tải trọng lớn",
+      "B": "Có giấy phép đặc biệt từ cơ quan chức năng",
+      "C": "Miễn giấy phép nếu tuyến đường không cấm",
+      "D": "Được tự ý vận chuyển trên mọi tuyến đường"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "question": "Tài xế không báo cáo tình trạng kỹ thuật của phương tiện trước chuyến đi. Hành vi này là:",
+    "options": {
+      "A": "Vi phạm quy định về an toàn giao thông",
+      "B": "Được chấp nhận nếu không gây sự cố",
+      "C": "Không vi phạm nếu phương tiện mới kiểm định",
+      "D": "Miễn trách nhiệm nếu phương tiện hoạt động bình thường"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Doanh nghiệp chỉ lưu trữ dữ liệu giám sát hành trình trong 2 tháng thay vì 6 tháng. Trường hợp này:",
+    "options": {
+      "A": "Vi phạm quy định pháp luật về vận tải",
+      "B": "Không vi phạm nếu không có yêu cầu kiểm tra",
+      "C": "Được nhắc nhở lần đầu",
+      "D": "Miễn xử lý nếu dữ liệu còn đầy đủ"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Xe khách tuyến cố định đón khách ngoài các điểm đã đăng ký. Điều này được coi là:",
+    "options": {
+      "A": "Vi phạm quy định tuyến cố định",
+      "B": "Được chấp nhận nếu hành khách tự yêu cầu",
+      "C": "Không vi phạm nếu xe còn chỗ trống",
+      "D": "Hợp lệ nếu không làm ảnh hưởng giao thông"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Doanh nghiệp vận tải không ghi chép đầy đủ thông tin hàng hóa vận chuyển. Trường hợp này:",
+    "options": {
+      "A": "Vi phạm quy định pháp luật",
+      "B": "Không vi phạm nếu hàng hóa không nguy hiểm",
+      "C": "Được cảnh báo lần đầu",
+      "D": "Miễn xử lý nếu hợp đồng vận tải hợp lệ"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Phương tiện vận tải không đạt tiêu chuẩn kỹ thuật vẫn hoạt động. Hành vi này:",
+    "options": {
+      "A": "Vi phạm nghiêm trọng và có thể bị đình chỉ hoạt động",
+      "B": "Được phép nếu không chở hàng nguy hiểm",
+      "C": "Không vi phạm nếu phương tiện đã đăng ký lộ trình",
+      "D": "Miễn xử lý nếu không gây tai nạn"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Doanh nghiệp vận tải chở hàng hóa vượt quá 30% tải trọng cho phép. Trường hợp này:",
+    "options": {
+      "A": "Vi phạm pháp luật và bị xử phạt hành chính",
+      "B": "Được chấp nhận nếu hàng hóa thiết yếu",
+      "C": "Không bị xử phạt nếu hợp đồng hợp lệ",
+      "D": "Miễn trách nhiệm nếu không làm hỏng đường"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Xe khách của công ty sử dụng phù hiệu đã hết hạn 3 tháng. Trường hợp này:",
+    "options": {
+      "A": "Vi phạm pháp luật và bị phạt hành chính",
+      "B": "Được gia hạn tự động nếu không có kiểm tra",
+      "C": "Không vi phạm nếu xe đã kiểm định định kỳ",
+      "D": "Miễn xử lý nếu xe hoạt động nội tỉnh"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "question": "Doanh nghiệp vận chuyển hóa chất nguy hiểm nhưng không có biển báo trên phương tiện. Trường hợp này:",
+    "options": {
+      "A": "Vi phạm quy định và bị xử phạt nghiêm khắc",
+      "B": "Không vi phạm nếu hóa chất được đóng gói an toàn",
+      "C": "Miễn xử lý nếu không gây sự cố",
+      "D": "Được cảnh báo và yêu cầu bổ sung biển báo"
+    },
+    "correctAnswer": "A"
+  }
+];
+
+        const quizForm = document.getElementById('quizForm');
+        const submitQuizButton = document.getElementById('submitQuiz');
+        const resultsDiv = document.getElementById('results');
+        const scoreSpan = document.getElementById('score');
+        const feedbackDiv = document.getElementById('feedback');
+        const retakeQuizButton = document.getElementById('retakeQuiz');
+
+        /**
+         * Renders the quiz questions and options dynamically.
+         */
+        function renderQuiz() {
+            quizForm.innerHTML = ''; // Clear previous questions
+            quizData.forEach((questionData, index) => {
+                const questionElement = document.createElement('div');
+                questionElement.classList.add('question-card');
+                questionElement.innerHTML = `
+                    <p class="text-lg font-semibold mb-4 text-gray-700">Câu ${index + 1}: ${questionData.question}</p>
+                    <div class="options-container space-y-2">
+                        ${Object.keys(questionData.options).map(optionKey => `
+                            <label class="option-label">
+                                <input type="radio" name="question${index}" value="${optionKey}" class="option-input text-indigo-600 focus:ring-indigo-500">
+                                <span class="text-gray-900">${optionKey}. ${questionData.options[optionKey]}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+                quizForm.appendChild(questionElement);
+            });
+            resultsDiv.classList.add('hidden'); // Hide results when rendering quiz
+            submitQuizButton.classList.remove('hidden'); // Show submit button
+        }
+
+        /**
+         * Calculates the score and displays feedback after quiz submission.
+         */
+        function submitQuiz() {
+            let score = 0;
+            feedbackDiv.innerHTML = ''; // Clear previous feedback
+
+            quizData.forEach((questionData, index) => {
+                const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+                const questionCard = document.querySelector(`.question-card:nth-of-type(${index + 1})`);
+                const optionsContainer = questionCard.querySelector('.options-container');
+
+                // Clear previous feedback classes
+                Array.from(optionsContainer.children).forEach(label => {
+                    label.classList.remove('correct-answer', 'incorrect-answer');
+                });
+
+                const feedbackItem = document.createElement('div');
+                feedbackItem.classList.add('result-item');
+
+                if (selectedOption) {
+                    if (selectedOption.value === questionData.correctAnswer) {
+                        score++;
+                        feedbackItem.classList.add('correct-answer');
+                        feedbackItem.innerHTML = `
+                            <p class="font-bold text-green-700">Câu ${index + 1}: Đúng!</p>
+                            <p>${questionData.question}</p>
+                            <p class="text-green-600">Đáp án của bạn: ${selectedOption.value}. ${questionData.options[selectedOption.value]}</p>
+                        `;
+                    } else {
+                        feedbackItem.classList.add('incorrect-answer');
+                        feedbackItem.innerHTML = `
+                            <p class="font-bold text-red-700">Câu ${index + 1}: Sai!</p>
+                            <p>${questionData.question}</p>
+                            <p class="text-red-600">Đáp án của bạn: ${selectedOption.value}. ${questionData.options[selectedOption.value]}</p>
+                            <p class="text-green-600">Đáp án đúng: ${questionData.correctAnswer}. ${questionData.options[questionData.correctAnswer]}</p>
+                        `;
+                    }
+                } else {
+                    feedbackItem.classList.add('incorrect-answer');
+                    feedbackItem.innerHTML = `
+                        <p class="font-bold text-red-700">Câu ${index + 1}: Bạn chưa trả lời!</p>
+                        <p>${questionData.question}</p>
+                        <p class="text-green-600">Đáp án đúng: ${questionData.correctAnswer}. ${questionData.options[questionData.correctAnswer]}</p>
+                    `;
+                }
+                feedbackDiv.appendChild(feedbackItem);
+            });
+
+            scoreSpan.textContent = `Bạn đã trả lời đúng ${score} / ${quizData.length} câu.`;
+            resultsDiv.classList.remove('hidden'); // Show results
+            submitQuizButton.classList.add('hidden'); // Hide submit button
+            resultsDiv.scrollIntoView({ behavior: 'smooth' }); // Scroll to results
+        }
+
+        // Event Listeners
+        submitQuizButton.addEventListener('click', submitQuiz);
+        retakeQuizButton.addEventListener('click', () => {
+            renderQuiz();
+            // Reset selected options
+            quizForm.reset();
+        });
+
+        // Initial render
+        renderQuiz();
+    </script>
+</body>
+</html>
